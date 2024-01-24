@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  django_gunicorn:
+    container_name: gunicorn
+    volumes:
+      - /home/ubuntu/creator-management/DigitalMarketing/:/app
+      - static_vol:/static
+      - media_vol:/media
+    env_file:
+      - .env
+    build:
+      context: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    volumes:
+      - static_vol:/static
+      - media_vol:/media
+    ports:
+      - "8000:80"
+    depends_on:
+      - django_gunicorn
+  
+  db:
+    image: postgres:11.7
+    container_name: postgresql_db
+    init: true
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 55432:5432
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=Creativemanagement
+
+volumes:
+  postgres_data:
+  static_vol:
+  media_vol:

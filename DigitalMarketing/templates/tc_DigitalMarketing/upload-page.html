@@ -1,0 +1,523 @@
+{% extends 'tc_DigitalMarketing/createrUploadbase.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  [data-initials]:before {
+  background: #099bdd;
+  color: white;
+  opacity: 1; 
+  content: attr(data-initials); 
+  display: inline-block; 
+  font-weight: bold; 
+  border-radius: 50%; 
+  vertical-align: middle; 
+  margin-right: 0.5em; 
+  width: 50px; 
+  height: 50px; 
+  line-height: 50px; 
+  text-align: center; 
+  }
+  </style>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        {% if userrolename == 'Uploader' %}
+        <a class="navbar-brand d-inline-flex align-items-center" href="/dm/uploaderdashboard/{{ k }}">
+          <!-- <img src="{% static 'images/logo_icon.png'%}" alt="" class="img-fluid" /> -->
+          <h2>true<span>coverage</span></h2>
+        </a>
+        {% endif %}
+        {% if userrolename == 'Reviewer' %}
+        <a class="navbar-brand d-inline-flex align-items-center" href="/dm/approver/{{ k }}">
+          <!-- <img src="{% static 'images/logo_icon.png'%}" alt="" class="img-fluid" /> -->
+          <h2>true<span>coverage</span></h2>
+        </a>
+        {% endif %}
+
+        {% if userrolename == 'SuperAdmin' %}
+        <a class="navbar-brand d-inline-flex align-items-center" href="/dm/superadmin/{{ k }}">
+          <!-- <img src="{% static 'images/logo_icon.png'%}" alt="" class="img-fluid" /> -->
+          <h2>true<span>coverage</span></h2>
+        </a>
+        {% endif %}
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto align-items-center">
+            <!-- <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="#"
+                ><i class="bi bi-moon"></i
+              ></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="#">
+                <i class="bi bi-brightness-high"></i>
+              </a>
+            </li> -->
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                <i class="bi bi-bell"></i>
+              </a>
+            </li>
+
+            <li class="nav-item account-section" id="accountSection" onclick="myFunction()">
+              <a class="nav-link" href="#">
+                <span>My Account</span>
+                <span class="av-holder">
+                  <!-- <img src={{userdetails.profile_pic}} alt=""/> -->
+                  <span data-initials="{{userdetails.username.0|title}}"></span>
+                  <i class="bi bi-chevron-down"></i>
+                </span>
+              </a>
+              <div class="dropdown-panel">
+                <ul>
+                  <a style="text-decoration: none;color: inherit;" href="/dm/account/{{ id }}" rel="noopener noreferrer"><li >Account</li> </a>
+                  <a style="text-decoration: none;color: inherit;" href="{% url 'logout'%}" rel="noopener noreferrer"><li>Logout</li></a>
+                </ul>
+              </div>
+            </li>
+
+
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <style>
+      body
+    {
+      scroll-behavior: smooth;
+      
+    }
+    .Imageupload { display:none }
+    .Gifupload {display: none;}
+    #name{
+      width: 15em;
+    }
+    #field2
+    {
+      width: 20em;
+    }
+    select{
+      width: 20em;
+    }
+    /* Loading Process */
+    #loading {
+        position: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0.9;
+        background-color: #fff;
+        z-index: 99;
+        }
+      #loading_trans {
+        position: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0.9;
+        background-color: #fff;
+        z-index: 99;
+        }
+        
+    #loading-image {
+    z-index: 100;
+    }
+
+    </style>
+    <div id="loading_trans" style="display: none;">
+      <img id="loading-image" src="{% static 'images/Hourglass.gif'%}" alt="Loading..." />
+      <div>
+      <h6>Video Transcription Initialized...</h6>
+      <h6 style="text-align: center;">Please Wait Until This Process Is Completed</h6>
+      </div>
+      
+  </div>
+
+    <div id="loading" style="display: none;">
+        <img id="loading-image" src="{% static 'images/Hourglass.gif'%}" alt="Loading..." />
+        <div>
+          <h6>Uploading...</h6>
+          <h6 style="text-align: center;">Please Wait Until This Process Is Completed</h6>
+        </div>
+
+
+
+    </div>
+
+
+    <div class="upload-page">
+        <div class="upload-panel mbottom">
+          <div class="upwrap">
+
+            {% if creative == 'Video' %}
+            <video width="50%" height="450" controls="">
+                <source src="{{url}}" type="video/mp4">
+            Your browser does not support the video tag.
+            </video>
+            {% endif %}
+  
+            {%if creative == 'Image' %}
+            <div class="upload-box">
+              <img width="100%" height="380" src="{{ url }}" alt="">
+            </div>
+            {% endif %}
+  
+            {%if creative == 'Gif' %}
+            <div class="upload-box">
+              <img width="100%" height="380%" src="{{ url }}" alt="">
+            </div>
+            {% endif %}
+
+
+
+            {%if Uploadfile %}
+            <form method="post" enctype="multipart/form-data" onsubmit="loading()" >
+            {% csrf_token %}
+            <div class="upload-box">
+              <div class="messege-info">
+                {% include 'tc_DigitalMarketing/messages.html' %}
+              </div>
+              <!-- <img class="collection" src="{% static 'images/fileupload.svg'%}" /> -->
+              <h5>
+                Browse or Import <span>Video,Image,Gif</span>
+              </h5>
+              <br>
+              <div class="platform-box">
+              <label>
+              <input class='Videoupload' type="radio" name="creative" value="Video" required>
+              <!-- <input class='Videoupload' type="radio" data-bs-toggle="modal" data-bs-target="#exampleModalCenter"  name="creative" value="Video"  required> -->
+              <img src="{% static './images/video_ico.svg'%} ">
+              </label>&nbsp;&nbsp;&nbsp;
+              <label>
+              <input class="imageupload" type="radio"  name="creative" value="Image" >
+              <img src="{% static './images/picture.svg'%}">
+              </label>&nbsp;&nbsp;&nbsp;
+              <label>
+              <input class="gifupload" type="radio"  name="creative" value="Gif" >
+              <img src="{% static './images/Gif.svg'%}">
+              </label>
+            </div>
+            <br>
+            <div class="platform-box">
+              <div class="container">
+                <div class="row">
+                  <div class="col-sm-2">
+                  </div>
+                  <div class="col-sm-5">
+                    <input class="form-control" type="file" name="fileToUpload" id="formFile" required>
+                  </div>
+                  <div class="col-sm-5">
+                    <button type="submit"  class="btn btn-primary px-3 rounded-3">
+                      Upload
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br>
+            <p>You will free to upload any file format upto 300 mb</p>
+          </div>
+          </form>
+          {% endif %}
+
+
+<!-- video option final submit -->
+          {%if finalsubmit %}
+          <form method="post" enctype="multipart/form-data" >
+          {% csrf_token %}
+          <div class="upload-box">
+            <div class="messege-info">
+              {% include 'tc_DigitalMarketing/messages.html' %}
+            </div>
+            <button type="submit" name='Upload' value="transcribe" onclick="transcribe_loading()" class="btn btn-primary px-3 rounded-3">
+              Start Transcription
+            </button>
+          </div>
+          </form>
+          {% endif %}
+          </div>            
+          
+          
+          {%if uploadform %}
+          <div class="presets-box">
+
+            {% if userrolename == 'Uploader' %}
+            <a href="/dm/uploaderdashboard/{{ k }}" class="btn-close" aria-label="Close" style="float: right;"></a>
+            {% endif %}
+            {% if userrolename == 'Reviewer' %}
+            <a href="/dm/approver/{{ k }}" class="btn-close" aria-label="Close" style="float: right;"></a>
+            {% endif %}
+    
+            {% if userrolename == 'SuperAdmin' %}
+              <a href="/dm/superadmin/{{ k }}" class="btn-close" aria-label="Close" style="float: right;"></a>
+            {% endif %}
+
+
+
+
+            <h2>Creative Details</h2>
+            <form method="post" enctype="multipart/form-data" >
+              {% csrf_token %}
+            {% if Uploadfile %}
+            <div class="preset-icon-box">
+              <label>Add your Creative Title</label>
+            <input type="text" id="name" name="title" class="form-control"  required style="width:100%" disabled>
+            </div>
+            <div class="preset-icon-box">
+              <label>Creator</label>
+              <input type="text" id="name" name='Creator' class="form-control"  required style="width:100%;" disabled>
+            </div>
+            <div class="preset-icon-box">
+              <label>Which LOB is this Creative for?</label>
+              <select class="form-control" id="field2" name='LOB' required style="width:100%; text-align: center;" disabled>
+                <option value="">--Select--</option>
+                <option value="ACA">ACA</option>
+                <option value="MEDICARE">MEDICARE</option>
+                <option value="MEDICAID">MEDICAID</option>
+            
+              </select>
+            </div>
+            {% endif %}
+
+            {% if submitform %}
+            <div class="preset-icon-box">
+              <label>Add your Creative Title</label>
+            <input type="text" id="name" name="title" class="form-control"  required style="width:100%" >
+            </div>
+            <div class="preset-icon-box">
+              <label>Creator</label>
+              <input type="text" id="name" name='Creator' class="form-control"  required style="width:100%;" >
+            </div>
+            <div class="preset-icon-box">
+              <label>Which LOB is this Creative for?</label>
+              <select class="form-control" id="field2" name='LOB' required style="width:100%; text-align: center;" >
+                <option value="">--Select--</option>
+                <option value="ACA">ACA</option>
+                <option value="MEDICARE">MEDICARE</option>
+                <option value="MEDICAID">MEDICAID</option>
+            
+              </select>
+            </div>
+            {% endif %}
+  
+            <div class="preset-icon-box">
+              <label>Which Platform is this Creative for?</label>
+              <div class="icon-box-align">
+                <div class="platform-box" style="background-color: #f7e8bc">
+                  <input class="platform" type="checkbox" id="select" onclick="toggle1(this)"/>
+                  <label for="select"> 
+                  <img src="{% static './images/Select-all.svg'%}" /></label>
+                </div>
+                <div class="platform-box" style="background-color: #3b5998">
+                  <input type="checkbox" name="Platform" id="facebook" value="Facebook" />
+                  <label for="facebook">
+                  <img src="{% static './images/facebook.svg'%}" /></label>
+                </div>
+                <div class="platform-box" style="background-color: #ee3b3b">
+                  <input type="checkbox" name="Platform" id="youtube" value="Youtube"/>
+                  <label for="youtube">
+                  <img src="{% static './images/youtube.svg'%}" /></label>
+                </div>
+                <div class="platform-box" style="background-color: #c9e8f9">
+                  <input type="checkbox" name="Platform" id="cdn" value="GDN"/>
+                  <label for="cdn" >
+                    <img src="{% static './images/cdn.png'%}" />
+                 </label> 
+                </div>
+                <div class="platform-box" style="background-color: #d8d5d5">
+                  <input type="checkbox" name="Platform" id="tiktok" value="tiktok"/>
+                  <label for="tiktok">
+                    <img src="{% static './images/tiktok.svg'%}" />
+                 </label> 
+                </div>
+                <div class="platform-box" style="background-color: #2fab7c">
+                  <input type="checkbox" name="Platform" id="settings" value="Native"/>
+                  <label for="settings">
+                  <img src="{% static './images/native.svg'%}" /></label>
+                </div>
+              </div>
+            </div>
+            
+            {% if Uploadfile %}
+            <button type="button"  class="submitdisable" disabled>Submit</button>
+            {% endif %}
+            <!-- <button class="submit" name='Upload' value="Upload" onclick="validateForm()" >Submit</button> -->
+            {% if submitform %}
+            <button class="submit" name='Upload' value="Upload" onclick="validateForm()" >Submit</button>
+            {% endif %}
+          </form>
+          </div>
+          {% endif %}
+
+                  
+<!-- video option final submit -->
+          {%if finalsubmit %}
+          <div class="presets-box">
+            <h2>Questions</h2>  
+            <form action="" method="post"enctype="multipart/form-data" onsubmit="loading()">
+              {% csrf_token %}   
+             {%if text %}
+              <label for="exampleFormControlTextarea1" class="form-label">Transcription</label>
+              <textarea class="form-control" id="exampleFormControlTextarea1" name="text" rows="3">{{text}}</textarea>
+              <br>
+            {% endif %} 
+
+            <label><h6>Do we have same creative for both Feed and Stories/Reels placements?</h6></label>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" name="switch" value="yes" id="flexSwitchCheckDefault" onchange="valueChangedform()">
+            </div>
+
+            <fieldset class="fileuploads" style="display: none;">
+                <label>Select aspect ratio which you have:</label>
+                    <input class="coupon_question2" type="checkbox" name="ascpect1" value="9:16" onchange="valueChanged1()"/> 
+                    <label>9:16</label>&nbsp;&nbsp;
+                    <input class="coupon_question3" type="checkbox" name="ascpect2" value="1:1" onchange="valueChanged2()"/> 
+                    <label>1:1</label>
+                    <fieldset class="answer2" style="display: none;">
+                    <br>
+                      <input class="form-control"  type="file" name="file2" >
+                    </fieldset>
+                    <br>
+                    <fieldset class="answer3" style="display: none;">
+                      <input class="form-control" type="file" name="file3" >
+                    </fieldset>
+              </fieldset>
+                    <br>
+                    <button class="submit" name='Upload' value="submit" >Submit</button>
+              </form>
+          </div>
+          {% endif %}
+
+
+
+
+</div>
+
+    <script type="text/javascript">
+
+      function valueChanged()
+      {
+          if($('.coupon_question1').is(":checked"))   
+              $(".answer1").show();
+          else
+              $(".answer1").hide();
+      }
+  
+      function valueChanged1()
+    {
+        if($('.coupon_question2').is(":checked")) 
+            $(".answer2").show();
+        else
+            $(".answer2").hide();
+    }
+
+    function valueChanged1()
+    {
+        if($('.coupon_question2').is(":checked")) 
+            $(".answer2").show();
+        else
+            $(".answer2").hide();
+    }
+
+        function valueChanged1()
+    {
+        if($('.coupon_question2').is(":checked")) 
+            $(".answer2").show();
+        else
+            $(".answer2").hide();
+    }
+  
+      function valueChanged2()
+    {
+        if($('.coupon_question3').is(":checked"))   
+            $(".answer3").show();
+        else
+            $(".answer3").hide();
+    }
+
+    function valueChangedform()
+      {
+          if($('.form-check-input').is(":checked"))   
+              $(".fileuploads").show();
+          else
+              $(".fileuploads").hide();
+      }
+  
+  </script>
+
+
+
+
+
+
+
+
+    
+    
+<script>
+  function toggle1(source) {
+    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i] != source)
+            checkboxes[i].checked = source.checked;
+    }
+}
+</script>
+
+<script>
+      function validateForm(){
+        var platformCheckboxes = document.getElementsByName("Platform");
+        var isChecked = false
+
+        if (platformCheckboxes.length >= 0) {
+            for (var i = 0; i < platformCheckboxes.length; i++)
+                if (platformCheckboxes[i].checked) {
+                isChecked = true;
+                break;
+                }
+                if (!isChecked) {
+                    alert("Please select at least one platform.")
+                    return false
+                }
+                // $("#loading").show();
+           
+            
+        }
+    }
+</script>
+<script type="text/javascript">// <![CDATA[
+  function loading(){
+      $("#loading").show();
+      // $("#content").hide();       
+  }
+// ]]></script>
+
+<script type="text/javascript">// <![CDATA[
+  function transcribe_loading(){
+      $("#loading_trans").show();
+      // $("#content").hide();       
+  }
+// ]]></script>
+    
+
+{% endblock content %}

@@ -1,0 +1,97 @@
+{% extends 'script_studio/index.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/script_style.css' %}">
+<body>
+    <h1>AI Video Script Generator</h1>
+    <h4>Use AI to generate scripts for your videos</h4>
+
+    <div class="dashboard">
+        <!-- // this is wrong just for demo -->
+        <div id="overlay" onclick="off()">
+            <div id="text">
+                <p>{{script.paragraph1}}</p>
+            </div>
+        </div>
+        <div id="overlay1" onclick="off1()">
+            <div id="text">
+                <p>{{script.paragraph2}}</p>
+            </div>
+        </div>
+        <div id="overlay2" onclick="off2()">
+            <div id="text">
+                <p>{{script.paragraph3}}</p>
+            </div>
+        </div>
+        <div id="overlay3" onclick="off3()">
+            <div id="text">
+                <p>{{script.paragraph4}}</p>
+            </div>
+        </div>
+        <div id="overlay4" onclick="off4()">
+            <div id="text">
+                <p>{{script.paragraph5}}</p>
+            </div>
+        </div>
+        
+        <form method="post">
+        {% csrf_token %}
+        <input type="text" name="input" id="prompt" placeholder="Enter your prompt">
+        <button onclick="generate()">Generate</button>
+        </form>
+        {% if script %}
+        <div>
+            <textarea id="textarea1" placeholder="Text area 1" onclick="on()">{{script.paragraph1}}</textarea>
+            <textarea id="textarea2" placeholder="Text area 2" onclick="on1()">{{script.paragraph2}}</textarea>
+            <textarea id="textarea3" placeholder="Text area 3" onclick="on2()">{{script.paragraph3}}</textarea>
+            <textarea id="textarea4" placeholder="Text area 4" onclick="on3()">{{script.paragraph4}}</textarea>
+            <textarea id="textarea5" placeholder="Text area 5" onclick="on4()">{{script.paragraph5}}</textarea>
+            <br>
+            <input type="submit" value="Save">
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function generate() {
+            // Add your generation logic here
+            var promptValue = document.getElementById("prompt").value;
+            alert('Prompt: ' + promptValue);
+        }
+
+        // this is wrong just for demo
+        function on() {
+        document.getElementById("overlay").style.display = "block";
+        }
+        function on1() {
+        document.getElementById("overlay1").style.display = "block";
+        }
+        function on2() {
+        document.getElementById("overlay2").style.display = "block";
+        }
+        function on3() {
+        document.getElementById("overlay3").style.display = "block";
+        }
+        function on4() {
+        document.getElementById("overlay4").style.display = "block";
+        }
+
+        function off() {
+        document.getElementById("overlay").style.display = "none";
+        }
+        function off1() {
+        document.getElementById("overlay1").style.display = "none";
+        }
+        function off2() {
+        document.getElementById("overlay2").style.display = "none";
+        }
+        function off3() {
+        document.getElementById("overlay3").style.display = "none";
+        }
+        function off4() {
+        document.getElementById("overlay4").style.display = "none";
+        }
+    </script>
+</body>
+{% endblock content %}

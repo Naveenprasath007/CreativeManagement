@@ -1,0 +1,11 @@
+*list
+
+psql -l
+
+*super user
+
+createuser --superuser Creativemanagement
+
+*enter into db
+
+psql -U Creativemanagement
