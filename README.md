@@ -8,7 +8,7 @@ CM-360 is Creative Management tool for Manage creatives.
 
 ## Authors
 
-- [@Naveen Kumaran](https://git.benefitalign.com/naveen.kumaran)
+- [@Naveen Prasath](https://github.com/Naveenprasath007)
 
 
 ## Documentation
